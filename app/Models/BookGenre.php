@@ -9,5 +9,10 @@ class BookGenre extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = ['name'];
+
+    public static function getAllowedFilters() {
+
+        return ['name'];
+    }
 }

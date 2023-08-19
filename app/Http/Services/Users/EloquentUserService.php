@@ -22,12 +22,7 @@ class EloquentUserService implements UserService
 
     protected function assignDefaultRole($user) {
 
-        $role = Role::where('name', Role::getUserRole())->first();
-
-        if($role) {
-
-            $user->roles()->attach(Role::where('name', Role::getUserRole())->first()->id);
-        }
+        $user->attachRole(Role::getUserRole());
     }
 
 }

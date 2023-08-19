@@ -2,7 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\BookGenre;
+use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,6 +17,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        $admin = User::factory()->create([
+            'name' => 'admin',
+            'email' => 'admin@test.com',
+            'password' => Hash::make('admin@admin')
+        ]);
+
+        $admin->attachRole(Role::getAdminRole());
+
+        BookGenre::factory(50)->create();
     }
 }

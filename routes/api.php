@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AuthController;
+use \App\Models\Role;
+use \App\Http\Controllers\Api\V1\Admin\BookGenreController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,5 +25,9 @@ Route::prefix('v1')->group(static function() {
 
         Route::post('logout', [AuthController::class, 'logout']);
 
+        Route::middleware('role:' . Role::getAdminRole())->group(static function() {
+
+            Route::resource('book-genres', BookGenreController::class);
+        });
     });
 });
