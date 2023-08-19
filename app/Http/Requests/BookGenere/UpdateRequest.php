@@ -27,7 +27,7 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['string', 'max:100', Rule::unique('book_genres', 'name')->ignore($this->route('id'))]
+            'name' => ['string', 'max:100', Rule::unique('book_genres', 'name')->ignore($this->route('book_genre'))]
         ];
     }
 }
