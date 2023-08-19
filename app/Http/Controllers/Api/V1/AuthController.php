@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
+use App\Http\Services\UserService;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,17 +15,17 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    protected $userService;
 
-    public function __construct(Request $request)
+    public function __construct(Request $request, UserService $userService)
     {
         $this->setConstruct($request, UserResource::class);
+        $this->userService = $userService;
     }
 
     public function register(RegisterRequest $request) {
 
-        $user = new User($request->validated());
-        $user->password = Hash::make($user->password);
-        $user->save();
+        $user = $this->userService->store($request->validated());
 
         return $this->success([
             'user' => new UserResource($user),
