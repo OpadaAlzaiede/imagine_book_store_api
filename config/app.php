@@ -2,6 +2,19 @@
 
 return [
 
+    /* Custom Response Messages */
+    'messages' => [
+        'auth' => [
+            'login_fail' => 'Credentials not match',
+            'login_success' => 'You Have Logged in Successfully',
+            'register_success' => 'You Have Registered in Successfully',
+            'logout_success' => 'You Have Logged out Successfully',
+        ]
+    ],
+
+    /*  API SECRET TOKEN  */
+
+    'api_secret_token' => env('API_SECRET_TOKEN', 'secret_token'),
     /*
     |--------------------------------------------------------------------------
     | Application Name
