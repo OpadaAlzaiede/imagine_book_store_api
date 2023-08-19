@@ -15,6 +15,10 @@ return [
             'book_genres' => [
                 'not_found' => 'Book genre not found.',
                 'deleted' => 'Book genre deleted successfully.'
+            ],
+            'books' => [
+                'not_found' => 'Book not found.',
+                'deleted' => 'Book deleted successfully.'
             ]
         ],
         'errors' => [

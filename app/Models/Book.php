@@ -11,20 +11,36 @@ class Book extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
+    protected $fillable = ['title', 'author', 'price', 'quantity', 'book_genre_id'];
 
-    public function genre(): BelongsTo {
+    public function bookGenre(): BelongsTo {
 
         return $this->belongsTo(BookGenre::class);
     }
 
-    public function getPriceAttribute(): Attribute {
+    public function setPriceAttribute($value) {
 
-        return $this->price * 100;
+        $this->attributes['price'] = $value / 100;
     }
 
-    public function setPriceAttribute(): Attribute {
+    public function getPriceAttribute($value) {
 
-        return $this->price * 100;
+        return $value * 100;
+    }
+
+    public static function getAllowedFilters() {
+
+        return [
+            'title',
+            'author',
+            'price',
+            'quantity',
+            'bookGenre.name'
+        ];
+    }
+
+    public static function getAllowedIncludes() {
+
+        return ['bookGenre'];
     }
 }

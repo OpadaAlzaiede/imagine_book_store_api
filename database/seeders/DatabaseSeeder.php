@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Book;
 use App\Models\BookGenre;
 use App\Models\Role;
 use App\Models\User;
@@ -25,6 +26,13 @@ class DatabaseSeeder extends Seeder
 
         $admin->attachRole(Role::getAdminRole());
 
-        BookGenre::factory(50)->create();
+        $bookGenres = BookGenre::factory(50)->create();
+
+        foreach ($bookGenres as $bookGenre) {
+
+            Book::factory(5)->create([
+                'book_genre_id' => $bookGenre->id
+            ]);
+        }
     }
 }

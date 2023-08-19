@@ -2,8 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AuthController;
+use \App\Http\Controllers\Api\V1\Admin\AdminBookController;
+use \App\Http\Controllers\Api\V1\BookController;
 use \App\Models\Role;
-use \App\Http\Controllers\Api\V1\Admin\BookGenreController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,11 +24,17 @@ Route::prefix('v1')->group(static function() {
 
     Route::middleware('auth:sanctum')->group(static function () {
 
-        Route::post('logout', [AuthController::class, 'logout']);
+        Route::get('books', [BookController::class, 'index']);
+        Route::get('books/{id}', [BookController::class, 'show']);
 
-        Route::middleware('role:' . Role::getAdminRole())->group(static function() {
+
+        /* ADMIN ROUTES */
+        Route::prefix('admin')->middleware('role:' . Role::getAdminRole())->group(static function() {
 
             Route::resource('book-genres', BookGenreController::class);
+            Route::resource('books', AdminBookController::class);
         });
+
+        Route::post('logout', [AuthController::class, 'logout']);
     });
 });
