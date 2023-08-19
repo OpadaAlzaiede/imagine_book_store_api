@@ -24,7 +24,7 @@ class AuthTest extends TestCase
             $response = $this->post(self::PREFIX.'register', $data);
 
             $response->assertStatus(200);
-            $this->assertDatabaseCount('users', 1);
+            $this->assertDatabaseCount('Users', 1);
     }
 
     public function test_user_with_inappropriate_data_cannot_register() {
@@ -38,7 +38,7 @@ class AuthTest extends TestCase
         $response = $this->post(self::PREFIX.'register', $data);
 
         $response->assertStatus(422);
-        $this->assertDatabaseCount('users', 0);
+        $this->assertDatabaseCount('Users', 0);
     }
 
     public function test_user_with_appropriate_credentials_can_login() {

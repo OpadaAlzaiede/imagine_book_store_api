@@ -6,12 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
-use App\Http\Services\UserService;
-use App\Models\User;
-use Illuminate\Http\Request;
+use App\Http\Services\Users\UserService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -28,7 +25,7 @@ class AuthController extends Controller
 
         return $this->success([
             'user' => new UserResource($user),
-            'token' => $user->createToken(Config::get('app.api_secret_token'))->plainTextToken
+            'token' => $this->getToken($user)
         ], Config::get('app.messages.auth.register_success'));
     }
 
@@ -41,7 +38,7 @@ class AuthController extends Controller
 
         return $this->success([
             'user' => new UserResource($user),
-            'token' => $user->createToken(Config::get('app.api_secret_token'))->plainTextToken
+            'token' => $this->getToken($user)
         ], Config::get('app.messages.auth.login_success'));
     }
 
@@ -49,5 +46,10 @@ class AuthController extends Controller
 
         auth()->user()->tokens()->delete();
         return $this->success([], Config::get('app.messages.auth.logout_success'));
+    }
+
+    protected function getToken($user) {
+
+        return $user->createToken(Config::get('app.api_secret_token'))->plainTextToken;
     }
 }
