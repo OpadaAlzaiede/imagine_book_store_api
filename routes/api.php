@@ -15,11 +15,14 @@ use App\Http\Controllers\Api\V1\AuthController;
 |
 */
 
-Route::post('login', [AuthController::class, 'login']);
-Route::post('register', [AuthController::class, 'register']);
+Route::prefix('v1')->group(static function() {
 
-Route::middleware('auth:sanctum')->group(static function () {
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('register', [AuthController::class, 'register']);
 
-    Route::post('logout', [AuthController::class, 'logout']);
+    Route::middleware('auth:sanctum')->group(static function () {
 
+        Route::post('logout', [AuthController::class, 'logout']);
+
+    });
 });
