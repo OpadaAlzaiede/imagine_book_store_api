@@ -10,9 +10,10 @@ use Tests\TestCase;
 
 class BookGenreTest extends TestCase
 {
+
     use RefreshDatabase;
 
-    const PREFIX = 'api/v1/book-genres';
+    const ROUTE = 'api/v1/admin/book-genres';
     const TABLE = 'book_genres';
 
     public function test_admin_can_access_book_genres_with_accurate_pagination() {
@@ -24,7 +25,7 @@ class BookGenreTest extends TestCase
 
         $admin = $this->createAdmin();
 
-        $response = $this->actingAs($admin)->get(self::PREFIX . '?perPage=' . $perPage);
+        $response = $this->actingAs($admin)->get(self::ROUTE . '?perPage=' . $perPage);
         $response->assertStatus(200);
 
         $responseData = $response->json();
@@ -36,13 +37,14 @@ class BookGenreTest extends TestCase
         $this->assertEquals($perPage, $responseData['meta']['per_page']);
     }
 
+
     public function test_user_cannot_access_book_genres() {
 
         BookGenre::factory(10)->create();
 
         $user = $this->createUser();
 
-        $response = $this->actingAs($user)->get(self::PREFIX);
+        $response = $this->actingAs($user)->get(self::ROUTE);
         $response->assertStatus(401);
         $response->assertJsonMissing(['data']);
     }
@@ -54,7 +56,7 @@ class BookGenreTest extends TestCase
 
         $admin = $this->createAdmin();
 
-        $response = $this->actingAs($admin)->get(self::PREFIX . '?filter[name]=first');
+        $response = $this->actingAs($admin)->get(self::ROUTE . '?filter[name]=first');
 
         $response->assertStatus(200);
         $this->assertCount(1, $response->json()['data']);
@@ -69,7 +71,7 @@ class BookGenreTest extends TestCase
 
         $admin = $this->createAdmin();
 
-        $response = $this->actingAs($admin)->get(self::PREFIX . '/' . $bookGenre->id);
+        $response = $this->actingAs($admin)->get(self::ROUTE . '/' . $bookGenre->id);
 
         $response->assertStatus(200);
         $this->assertEquals($bookGenre->id, $response->json()['data']['id']);
@@ -79,7 +81,7 @@ class BookGenreTest extends TestCase
 
         $admin = $this->createAdmin();
 
-        $response = $this->actingAs($admin)->post(self::PREFIX, [
+        $response = $this->actingAs($admin)->post(self::ROUTE, [
             'name' => 'test_name'
         ]);
 
@@ -95,7 +97,7 @@ class BookGenreTest extends TestCase
 
         $admin = $this->createAdmin();
 
-        $response = $this->actingAs($admin)->post(self::PREFIX, [
+        $response = $this->actingAs($admin)->post(self::ROUTE, [
             'name' => $name
         ]);
 
@@ -109,7 +111,7 @@ class BookGenreTest extends TestCase
 
         $admin = $this->createAdmin();
 
-        $response = $this->actingAs($admin)->put(self::PREFIX . '/' . $bookGenre->id, [
+        $response = $this->actingAs($admin)->put(self::ROUTE . '/' . $bookGenre->id, [
             'name' => 'new_name'
         ]);
 
@@ -126,12 +128,13 @@ class BookGenreTest extends TestCase
 
         $admin = $this->createAdmin();
 
-        $response = $this->actingAs($admin)->delete(self::PREFIX . '/' . $bookGenre->id);
+        $response = $this->actingAs($admin)->delete(self::ROUTE . '/' . $bookGenre->id);
 
         $response->assertStatus(200);
 
         $this->assertDatabaseCount(self::TABLE, 0);
     }
+
 
     protected function createAdmin() {
 

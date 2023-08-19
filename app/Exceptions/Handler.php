@@ -43,6 +43,6 @@ class Handler extends ExceptionHandler
     {
         return response()->json([
             'message' => $e->getMessage()
-        ], $e->getCode());
+        ], 500);
     }
 }

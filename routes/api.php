@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\AuthController;
 use \App\Http\Controllers\Api\V1\Admin\AdminBookController;
+use \App\Http\Controllers\Api\V1\Admin\BookGenreController;
 use \App\Http\Controllers\Api\V1\BookController;
 use \App\Models\Role;
 
