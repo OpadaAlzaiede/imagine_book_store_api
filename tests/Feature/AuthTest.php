@@ -11,7 +11,7 @@ class AuthTest extends TestCase
 {
     use RefreshDatabase;
 
-    const PREFIx = 'api/v1/';
+    const PREFIX = 'api/v1/';
 
     public function test_user_with_appropriate_data_can_register() {
 
@@ -21,7 +21,7 @@ class AuthTest extends TestCase
                 'password' => 'test-test',
             ];
 
-            $response = $this->post(self::PREFIx.'register', $data);
+            $response = $this->post(self::PREFIX.'register', $data);
 
             $response->assertStatus(200);
             $this->assertDatabaseCount('users', 1);
@@ -35,7 +35,7 @@ class AuthTest extends TestCase
             'password' => 'test-test',
         ];
 
-        $response = $this->post(self::PREFIx.'register', $data);
+        $response = $this->post(self::PREFIX.'register', $data);
 
         $response->assertStatus(422);
         $this->assertDatabaseCount('users', 0);
@@ -45,7 +45,7 @@ class AuthTest extends TestCase
 
         $user = User::factory()->create();
 
-        $response = $this->post(self::PREFIx.'login', [
+        $response = $this->post(self::PREFIX.'login', [
             'email' => $user->email,
             'password' => 'password', // it's coming from User factory.
             'password_confirmation' => 'password'
@@ -63,7 +63,7 @@ class AuthTest extends TestCase
 
         $user = User::factory()->create();
 
-        $response = $this->post(self::PREFIx.'login', [
+        $response = $this->post(self::PREFIX.'login', [
             'email' => $user->email,
             'password' => 'password123', // incorrect password.
             'password_confirmation' => 'password123'

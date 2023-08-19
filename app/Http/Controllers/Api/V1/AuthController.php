@@ -17,9 +17,8 @@ class AuthController extends Controller
 {
     protected $userService;
 
-    public function __construct(Request $request, UserService $userService)
+    public function __construct(UserService $userService)
     {
-        $this->setConstruct($request, UserResource::class);
         $this->userService = $userService;
     }
 
