@@ -33,8 +33,6 @@ class Book extends Model
         return [
             'title',
             'author',
-            'price',
-            'quantity',
             'bookGenre.name'
         ];
     }

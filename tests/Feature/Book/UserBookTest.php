@@ -102,16 +102,16 @@ class UserBookTest extends TestCase
         $this->assertEquals($firstBook->id, $responseData['data'][0]['id']);
     }
 
-    public function test_users_can_filter_books_based_on_price() {
+    public function test_admin_can_filter_books_based_on_genre() {
 
-
-        $bookGenre = BookGenre::factory()->create();
-        $firstBook = Book::factory()->create(['price' => 200, 'quantity' => 1, 'book_genre_id' => $bookGenre->id]);
-        Book::factory()->create(['price' => 100, 'quantity' => 1, 'book_genre_id' => $bookGenre->id]);
+        $firstBookGenre = BookGenre::factory()->create(['name' => 'first_genre']);
+        $secondBookGenre = BookGenre::factory()->create(['name' => 'second_genre']);
+        $firstBook = Book::factory()->create(['book_genre_id' => $firstBookGenre->id, 'quantity' => 1]);
+        Book::factory()->create(['book_genre_id' => $secondBookGenre->id, 'quantity' => 1]);
 
         $user = $this->createUser();
 
-        $response = $this->actingAs($user)->get(self::USER_ROUTE . '?filter[price]=' . 2);
+        $response = $this->actingAs($user)->get(self::USER_ROUTE . '?filter[bookGenre.name]=' . 'first');
         $response->assertStatus(200);
 
         $responseData = $response->json();
@@ -120,23 +120,6 @@ class UserBookTest extends TestCase
         $this->assertEquals($firstBook->id, $responseData['data'][0]['id']);
     }
 
-    public function test_users_can_filter_books_based_on_quantity() {
-
-
-        $bookGenre = BookGenre::factory()->create();
-        $firstBook = Book::factory()->create(['quantity' => 5, 'book_genre_id' => $bookGenre->id]);
-        Book::factory()->create(['quantity' => 6, 'book_genre_id' => $bookGenre->id]);
-
-        $user = $this->createUser();
-
-        $response = $this->actingAs($user)->get(self::USER_ROUTE . '?filter[quantity]=' . 5);
-        $response->assertStatus(200);
-
-        $responseData = $response->json();
-
-        $this->assertCount(1, $responseData['data']);
-        $this->assertEquals($firstBook->id, $responseData['data'][0]['id']);
-    }
 
     public function test_users_view_book_by_id() {
 
