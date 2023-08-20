@@ -8,7 +8,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class BookGenreTest extends TestCase
+class AdminBookGenreTest extends TestCase
 {
 
     use RefreshDatabase;
@@ -37,17 +37,6 @@ class BookGenreTest extends TestCase
         $this->assertEquals($perPage, $responseData['meta']['per_page']);
     }
 
-
-    public function test_user_cannot_access_book_genres() {
-
-        BookGenre::factory(10)->create();
-
-        $user = $this->createUser();
-
-        $response = $this->actingAs($user)->get(self::ROUTE);
-        $response->assertStatus(401);
-        $response->assertJsonMissing(['data']);
-    }
 
     public function test_admin_can_filter_book_genres_based_on_name() {
 
@@ -146,14 +135,4 @@ class BookGenreTest extends TestCase
         return $admin;
     }
 
-
-    protected function createUser() {
-
-        $userRole = Role::create(['name' => 'user']);
-
-        $user = User::factory()->create();
-        $user->attachRole($userRole->name);
-
-        return $user;
-    }
 }
