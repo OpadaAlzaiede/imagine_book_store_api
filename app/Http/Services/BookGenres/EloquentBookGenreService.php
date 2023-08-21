@@ -13,7 +13,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EloquentBookGenreService implements BookGenreService
 {
-    use ApiResponser;
 
     public function index($perPage, $page)
     {
@@ -29,7 +28,7 @@ class EloquentBookGenreService implements BookGenreService
 
         if(!$bookGenre) {
 
-            throw new NotFoundHttpException(Config::get('app.messages.api.book_genres.not_found'));
+            throw new NotFoundHttpException(Config::get('messages.api.book_genres.not_found'));
         }
 
         return $bookGenre;
@@ -46,7 +45,7 @@ class EloquentBookGenreService implements BookGenreService
 
         if(!$bookGenre) {
 
-            throw new NotFoundHttpException(Config::get('app.messages.api.book_genres.not_found'));
+            throw new NotFoundHttpException(Config::get('messages.api.book_genres.not_found'));
         }
 
         $bookGenre->update($data);
@@ -60,7 +59,7 @@ class EloquentBookGenreService implements BookGenreService
 
         if(!$bookGenre) {
 
-            throw new NotFoundHttpException(Config::get('app.messages.api.book_genres.not_found'));
+            throw new NotFoundHttpException(Config::get('messages.api.book_genres.not_found'));
         }
 
         return $bookGenre->delete();

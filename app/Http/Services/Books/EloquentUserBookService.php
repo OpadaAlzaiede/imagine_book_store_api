@@ -27,7 +27,7 @@ class EloquentUserBookService implements BookQueryService
 
         if(!$book) {
 
-            throw new NotFoundHttpException(Config::get('app.messages.api.books.not_found'));
+            throw new NotFoundHttpException(Config::get('messages.api.books.not_found'));
         }
 
         return $book;

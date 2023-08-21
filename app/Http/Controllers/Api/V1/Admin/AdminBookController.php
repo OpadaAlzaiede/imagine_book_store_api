@@ -46,7 +46,7 @@ class AdminBookController extends Controller
     public function destroy($id) {
 
         return $this->bookModificationService->destroy($id)
-            ? $this->success([], Config::get('app.messages.api.book.deleted'))
-            : $this->error(500, Config::get('app.messages.api.errors.server_error'));
+            ? $this->success([], Config::get('messages.api.book.deleted'))
+            : $this->error(500, Config::get('messages.api.errors.server_error'));
     }
 }

@@ -19,7 +19,11 @@ return [
             'books' => [
                 'not_found' => 'Book not found.',
                 'deleted' => 'Book deleted successfully.'
-            ]
+            ],
+            'orders' => [
+                'not_found' => 'Order not found.',
+                'deleted' => 'Order deleted successfully.'
+            ],
         ],
         'errors' => [
             'server_error' => 'something went wrong.'

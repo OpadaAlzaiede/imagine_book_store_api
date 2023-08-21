@@ -27,7 +27,7 @@ class EloquentAdminBookService implements BookQueryService, BookModificationServ
 
         if(!$book) {
 
-            throw new NotFoundHttpException(Config::get('app.messages.api.books.not_found'));
+            throw new NotFoundHttpException(Config::get('messages.api.books.not_found'));
         }
 
         return $book;
@@ -44,7 +44,7 @@ class EloquentAdminBookService implements BookQueryService, BookModificationServ
 
         if(!$book) {
 
-            throw new NotFoundHttpException(Config::get('app.messages.api.books.not_found'));
+            throw new NotFoundHttpException(Config::get('messages.api.books.not_found'));
         }
 
         $book->update($data);
@@ -58,7 +58,7 @@ class EloquentAdminBookService implements BookQueryService, BookModificationServ
 
         if(!$book) {
 
-            throw new NotFoundHttpException(Config::get('app.messages.api.books.not_found'));
+            throw new NotFoundHttpException(Config::get('messages.api.books.not_found'));
         }
 
         return $book->delete();

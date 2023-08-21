@@ -5,6 +5,8 @@ use App\Http\Controllers\Api\V1\AuthController;
 use \App\Http\Controllers\Api\V1\Admin\AdminBookController;
 use \App\Http\Controllers\Api\V1\Admin\BookGenreController;
 use \App\Http\Controllers\Api\V1\BookController;
+use \App\Http\Controllers\Api\V1\OrderController;
+use \App\Http\Controllers\Api\V1\Admin\AdminOrderController;
 use \App\Models\Role;
 
 /*
@@ -25,17 +27,23 @@ Route::prefix('v1')->group(static function() {
 
     Route::middleware('auth:sanctum')->group(static function () {
 
+
         Route::get('books', [BookController::class, 'index']);
         Route::get('books/{id}', [BookController::class, 'show']);
 
+        Route::get('orders', [OrderController::class, 'index']);
+        Route::get('orders/{id}', [OrderController::class, 'show']);
+        Route::post('orders', [OrderController::class, 'post']);
+
+        Route::post('logout', [AuthController::class, 'logout']);
 
         /* ADMIN ROUTES */
         Route::prefix('admin')->middleware('role:' . Role::getAdminRole())->group(static function() {
 
             Route::resource('book-genres', BookGenreController::class);
             Route::resource('books', AdminBookController::class);
+            Route::get('orders', [AdminOrderController::class, 'index']);
+            Route::get('orders/{id}', [AdminOrderController::class, 'show']);
         });
-
-        Route::post('logout', [AuthController::class, 'logout']);
     });
 });

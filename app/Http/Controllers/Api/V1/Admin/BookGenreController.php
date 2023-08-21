@@ -43,7 +43,7 @@ class BookGenreController extends Controller
     public function destroy($id) {
 
         return $this->bookGenreService->destroy($id)
-                ? $this->success([], Config::get('app.messages.api.book_genres.deleted'))
-                : $this->error(500, Config::get('app.messages.api.errors.server_error'));
+                ? $this->success([], Config::get('messages.api.book_genres.deleted'))
+                : $this->error(500, Config::get('messages.api.errors.server_error'));
     }
 }
