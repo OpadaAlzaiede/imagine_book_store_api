@@ -13,6 +13,7 @@ class Order extends Model
     use HasFactory;
 
     protected $guarded = ['id', 'user_id'];
+    public $timestamps = false;
 
     public static function boot() {
 
@@ -23,8 +24,6 @@ class Order extends Model
             $order->date = Carbon::now();
             $order->user_id = auth()->id();
             $order->total_price = 0;
-
-            $order->save();
         });
     }
 
@@ -38,6 +37,16 @@ class Order extends Model
         return $this->belongsToMany(Book::class)->withPivot(['quantity', 'unit_price']);
     }
 
+    public function setTotalPriceAttribute($value) {
+
+        $this->attributes['total_price'] = $value / 100;
+    }
+
+    public function getTotalPriceAttribute($value) {
+
+        return $value * 100;
+    }
+
     public static function getUserAllowedFilters() {
 
         return ['date'];
@@ -45,9 +54,7 @@ class Order extends Model
 
     public static function getAdminAllowedFilters() {
 
-        $userAllowedFilters = self::getUserAllowedFilter();
-
-        return array_push($userAllowedFilters, 'user.name');
+        return ['date', 'user.name'];
     }
 
 
@@ -58,8 +65,6 @@ class Order extends Model
 
     public static function getAdminAllowedIncludes() {
 
-        $userAllowedIncludes = self::getUserAllowedIncludes();
-
-        return array_push($userAllowedIncludes, 'user');
+        return ['books', 'user'];
     }
 }

@@ -36,14 +36,13 @@ class EloquentUserOrderService implements OrderQueryService, OrderStoreService
             throw new NotFoundHttpException(Config::get('messages.api.orders.not_found'));
         }
 
-        return $order;
+        return $order->load(Order::getUserAllowedIncludes());
     }
 
     public function store($data)
     {
-        DB::beginTransaction();
 
-        $order = new Order();
+        $order = Order::create();
 
         foreach ($data['books'] as $book) {
 
@@ -51,11 +50,15 @@ class EloquentUserOrderService implements OrderQueryService, OrderStoreService
 
             $order->books()->attach($book['id'], [
                 'quantity' => $book['quantity'],
-                'unit_price' => $book->price
+                'unit_price' => $book->price,
             ]);
+
+            $order->total_price += $book['quantity'] * $book->price;
+
+            $book->updateQuantity($book['quantity']);
         }
 
-        DB::commit();
+        $order->save();
 
         return $order;
     }

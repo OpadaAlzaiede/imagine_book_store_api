@@ -28,9 +28,9 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'books' => ['required', 'array'],
-            'books.*.id' => ['required', Rule::exists('books')->where('quantitiy', '>', 0)],
-            'books.*.quantity' => ['required', new SufficientBookQuantity()]
+            'books' => ['required', 'array', new SufficientBookQuantity()],
+            'books.*.id' => ['required', Rule::exists('books')],
+            'books.*.quantity' => ['required', 'numeric']
         ];
     }
 }

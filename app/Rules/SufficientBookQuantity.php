@@ -14,7 +14,6 @@ class SufficientBookQuantity implements Rule
      */
     public function __construct()
     {
-        //
     }
 
     /**
@@ -26,12 +25,14 @@ class SufficientBookQuantity implements Rule
      */
     public function passes($attribute, $value)
     {
-        $book = Book::find($value['id']);
-        if (!$book) {
-            return false;
-        }
+        foreach ($value as $item) {
 
-        return $book->quantity >= $value['quantity'];
+            $book = Book::find($item['id']);
+
+            if($book->quantity < $item['quantity']) return false;
+       }
+
+        return true;
     }
 
     /**
@@ -41,6 +42,6 @@ class SufficientBookQuantity implements Rule
      */
     public function message()
     {
-        return 'The book does not have a sufficient quantity.';
+        return 'The books does not have a sufficient quantity.';
     }
 }

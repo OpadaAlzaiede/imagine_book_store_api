@@ -15,6 +15,7 @@ use App\Http\Services\Books\EloquentUserBookService;
 use App\Http\Services\Orders\EloquentAdminOrderService;
 use App\Http\Services\Orders\EloquentUserOrderService;
 use App\Http\Services\Orders\OrderQueryService;
+use App\Http\Services\Orders\OrderStoreService;
 use App\Http\Services\Users\EloquentUserService;
 use App\Http\Services\Users\UserService;
 use Illuminate\Support\ServiceProvider;
@@ -48,7 +49,12 @@ class AppServiceProvider extends ServiceProvider
                     ->give(EloquentUserBookService::class);
 
 
+
         /* Bind Order Services */
+
+        $this->app->bind(OrderStoreService::class, EloquentUserOrderService::class);
+
+
         $this->app->when(AdminOrderController::class)
             ->needs(OrderQueryService::class)
             ->give(EloquentAdminOrderService::class);

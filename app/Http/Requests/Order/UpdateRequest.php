@@ -28,9 +28,9 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'books' => ['array'],
-            'books.*.id' => ['required', Rule::exists('books')->where('quantitiy', '>', 0)],
-            'books.*.quantity' => ['required', new SufficientBookQuantity()],
+            'books' => ['array', new SufficientBookQuantity()],
+            'books.*.id' => [Rule::exists('books')],
+            'books.*.quantity' => ['numeric']
         ];
     }
 }

@@ -41,4 +41,11 @@ class Book extends Model
 
         return ['bookGenre'];
     }
+
+    public function updateQuantity($quantity) {
+
+        $this->quantity -= $quantity;
+
+        $this->save();
+    }
 }

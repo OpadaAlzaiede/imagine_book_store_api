@@ -15,8 +15,8 @@ class OrderResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->id,
             'date' => $this->date,
+            'total_price' => $this->total_price,
             'books' => BookResource::collection($this->whenLoaded('books')),
             'user' => $this->whenLoaded('user')
         ];
