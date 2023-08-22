@@ -47,3 +47,9 @@ Route::prefix('v1')->group(static function() {
         });
     });
 });
+
+Route::fallback(function() {
+    return response()->json([
+        'message' => 'Hm, how did you get here anyway !',
+    ], 404);
+});
