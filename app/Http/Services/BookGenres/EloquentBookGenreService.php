@@ -18,6 +18,7 @@ class EloquentBookGenreService implements BookGenreService
     {
         return QueryBuilder::for(BookGenre::class)
                         ->allowedFilters(BookGenre::getAllowedFilters())
+                        ->allowedIncludes(BookGenre::getAllowedIncludes())
                         ->defaultSort('-id')
                         ->paginate($perPage, ['*'], 'page', $page);
     }
@@ -31,7 +32,7 @@ class EloquentBookGenreService implements BookGenreService
             throw new NotFoundHttpException(Config::get('messages.api.book_genres.not_found'));
         }
 
-        return $bookGenre;
+        return $bookGenre->load(BookGenre::getAllowedIncludes());
     }
 
     public function store($data)

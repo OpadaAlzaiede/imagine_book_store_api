@@ -30,7 +30,7 @@ class EloquentAdminBookService implements BookQueryService, BookModificationServ
             throw new NotFoundHttpException(Config::get('messages.api.books.not_found'));
         }
 
-        return $book;
+        return $book->load(Book::getAllowedIncludes());
     }
 
     public function store($data) {

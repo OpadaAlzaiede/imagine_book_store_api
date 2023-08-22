@@ -29,6 +29,6 @@ class EloquentAdminOrderService implements OrderQueryService
             throw new NotFoundHttpException(Config::get('messages.api.orders.not_found'));
         }
 
-        return $order->load(Order::getUserAllowedIncludes());
+        return $order->load(Order::getAdminAllowedIncludes());
     }
 }

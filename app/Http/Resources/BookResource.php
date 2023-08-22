@@ -20,7 +20,7 @@ class BookResource extends JsonResource
             'author' => $this->author,
             'price' => $this->price,
             'quantity' => $this->quantity,
-            'book_genre' => $this->whenLoaded('bookGenre')
+            'book_genre' => BookGenreResource::make($this->whenLoaded('bookGenre'))
         ];
     }
 }

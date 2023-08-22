@@ -11,6 +11,16 @@ class BookGenre extends Model
 
     protected $fillable = ['name'];
 
+    public function books() {
+
+        return $this->hasMany(Book::class);
+    }
+
+    public static function getAllowedIncludes() {
+
+        return ['books'];
+    }
+
     public static function getAllowedFilters() {
 
         return ['name'];

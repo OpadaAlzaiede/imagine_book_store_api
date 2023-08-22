@@ -16,7 +16,8 @@ class BookGenreResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'name' => $this->name
+            'name' => $this->name,
+            'books' => $this->whenLoaded('books')
         ];
     }
 }
