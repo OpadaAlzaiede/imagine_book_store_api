@@ -46,20 +46,21 @@ class EloquentUserOrderService implements OrderQueryService, OrderStoreService
 
         foreach ($data['books'] as $book) {
 
-            $book = Book::find($book['id']);
+            $bookModel = Book::find($book['id']);
+            $requiredQuantity = $book['quantity'];
 
-            $order->books()->attach($book['id'], [
-                'quantity' => $book['quantity'],
-                'unit_price' => $book->price,
+            $order->books()->attach($bookModel->id, [
+                'quantity' => $requiredQuantity,
+                'unit_price' => $bookModel->price,
             ]);
 
-            $order->total_price += $book['quantity'] * $book->price;
+            $order->total_price += $requiredQuantity * $bookModel->price;
 
-            $book->updateQuantity($book['quantity']);
+            $bookModel->updateQuantity($requiredQuantity);
         }
 
         $order->save();
 
-        return $order;
+        return $order->load(Order::getUserAllowedIncludes());
     }
 }
