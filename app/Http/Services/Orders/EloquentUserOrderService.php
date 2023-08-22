@@ -41,7 +41,6 @@ class EloquentUserOrderService implements OrderQueryService, OrderStoreService
 
     public function store($data)
     {
-
         $order = Order::create();
 
         foreach ($data['books'] as $book) {
@@ -49,10 +48,7 @@ class EloquentUserOrderService implements OrderQueryService, OrderStoreService
             $bookModel = Book::find($book['id']);
             $requiredQuantity = $book['quantity'];
 
-            $order->books()->attach($bookModel->id, [
-                'quantity' => $requiredQuantity,
-                'unit_price' => $bookModel->price,
-            ]);
+            $this->attachBookToOrder($order, $bookModel->id, $requiredQuantity, $bookModel->price);
 
             $order->total_price += $requiredQuantity * $bookModel->price;
 
@@ -62,5 +58,13 @@ class EloquentUserOrderService implements OrderQueryService, OrderStoreService
         $order->save();
 
         return $order->load(Order::getUserAllowedIncludes());
+    }
+
+    protected function attachBookToOrder($order, $bookId, $quantity, $unitPrice) {
+
+        $order->books()->attach($bookId, [
+            'quantity' => $quantity,
+            'unit_price' => $unitPrice,
+        ]);
     }
 }
