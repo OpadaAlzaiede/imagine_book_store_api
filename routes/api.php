@@ -7,6 +7,7 @@ use \App\Http\Controllers\Api\V1\Admin\BookGenreController;
 use \App\Http\Controllers\Api\V1\BookController;
 use \App\Http\Controllers\Api\V1\OrderController;
 use \App\Http\Controllers\Api\V1\Admin\AdminOrderController;
+use \App\Http\Controllers\Api\V1\CartController;
 use \App\Models\Role;
 
 /*
@@ -20,28 +21,38 @@ use \App\Models\Role;
 |
 */
 
-Route::post('login', [AuthController::class, 'login']);
-Route::post('register', [AuthController::class, 'register']);
+Route::prefix('v1')->group(static function() {
 
-Route::middleware('auth:sanctum')->group(static function () {
+    Route::post('login', [AuthController::class, 'login']);
+    Route::post('register', [AuthController::class, 'register']);
+
+    Route::middleware('auth:sanctum')->group(static function () {
 
 
-    Route::get('books', [BookController::class, 'index']);
-    Route::get('books/{id}', [BookController::class, 'show']);
+        /* Book Resource */
+        Route::get('books', [BookController::class, 'index']);
+        Route::get('books/{id}', [BookController::class, 'show']);
 
-    Route::get('orders', [OrderController::class, 'index']);
-    Route::get('orders/{id}', [OrderController::class, 'show']);
-    Route::post('orders', [OrderController::class, 'store']);
+        /* Cart Resource */
+        Route::get('cart', [CartController::class, 'get']);
+        Route::post('cart', [CartController::class, 'add']);
+        Route::delete('cart', [CartController::class, 'remove']);
 
-    Route::post('logout', [AuthController::class, 'logout']);
+        /* Order Resource */
+        Route::get('orders', [OrderController::class, 'index']);
+        Route::get('orders/{id}', [OrderController::class, 'show']);
+        Route::post('orders', [OrderController::class, 'store']);
 
-    /* ADMIN ROUTES */
-    Route::prefix('admin')->middleware('role:' . Role::getAdminRole())->group(static function() {
+        Route::post('logout', [AuthController::class, 'logout']);
 
-        Route::resource('book-genres', BookGenreController::class);
-        Route::resource('books', AdminBookController::class);
-        Route::get('orders', [AdminOrderController::class, 'index']);
-        Route::get('orders/{id}', [AdminOrderController::class, 'show']);
+        /* ADMIN ROUTES */
+        Route::prefix('admin')->middleware('role:' . Role::getAdminRole())->group(static function() {
+
+            Route::resource('book-genres', BookGenreController::class);
+            Route::resource('books', AdminBookController::class);
+            Route::get('orders', [AdminOrderController::class, 'index']);
+            Route::get('orders/{id}', [AdminOrderController::class, 'show']);
+        });
     });
 });
 

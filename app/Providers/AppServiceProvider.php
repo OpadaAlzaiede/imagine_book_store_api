@@ -12,6 +12,8 @@ use App\Http\Services\Books\BookModificationService;
 use App\Http\Services\Books\BookQueryService;
 use App\Http\Services\Books\EloquentAdminBookService;
 use App\Http\Services\Books\EloquentUserBookService;
+use App\Http\Services\Cart\CartService;
+use App\Http\Services\Cart\EloquentCartService;
 use App\Http\Services\Orders\EloquentAdminOrderService;
 use App\Http\Services\Orders\EloquentUserOrderService;
 use App\Http\Services\Orders\OrderQueryService;
@@ -36,6 +38,9 @@ class AppServiceProvider extends ServiceProvider
         /* Bind Book Genre Service */
         $this->app->bind(BookGenreService::class, EloquentBookGenreService::class);
 
+        /* Bind Cart Service */
+        $this->app->bind(CartService::class, EloquentCartService::class);
+
 
         /* Bind Book Services */
         $this->app->bind(BookModificationService::class, EloquentAdminBookService::class);
@@ -47,7 +52,6 @@ class AppServiceProvider extends ServiceProvider
         $this->app->when(BookController::class)
                     ->needs(BookQueryService::class)
                     ->give(EloquentUserBookService::class);
-
 
 
         /* Bind Order Services */

@@ -53,6 +53,11 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
+    public function cart() {
+
+        return $this->belongsToMany(Book::class, 'cart')->withPivot(['quantity']);
+    }
+
     public function attachRole($roleName) {
 
         $role = Role::where('name', $roleName)->first();
