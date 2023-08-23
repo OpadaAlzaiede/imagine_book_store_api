@@ -2,12 +2,14 @@
 
 namespace App\Http\Requests\Cart;
 
-use App\Models\Book;
+use App\Rules\SufficientBookQuantity;
+use App\Traits\JsonErrors;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class AddReqest extends FormRequest
+class AddRequest extends FormRequest
 {
+    use JsonErrors;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -27,7 +29,7 @@ class AddReqest extends FormRequest
     {
         return [
             'book_id' => ['required', Rule::exists('books', 'id')],
-            'quantity' => ['required', 'numeric']
+            'quantity' => ['required', 'numeric', 'min:1', new SufficientBookQuantity($this->request->get('book_id'))]
         ];
     }
 }

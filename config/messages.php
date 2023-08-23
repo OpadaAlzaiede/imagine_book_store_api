@@ -19,7 +19,9 @@ return [
         ],
         'orders' => [
             'not_found' => 'Order not found.',
-            'deleted' => 'Order deleted successfully.'
+            'deleted' => 'Order deleted successfully.',
+            'empty' => 'Your cart is empty, add some books to it',
+            'invalid_cart' => 'Sorry, some of your books were recently purchased, please update your quantities'
         ],
     ],
     'errors' => [

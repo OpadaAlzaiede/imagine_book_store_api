@@ -7,13 +7,15 @@ use Illuminate\Contracts\Validation\Rule;
 
 class SufficientBookQuantity implements Rule
 {
+    protected $bookId;
     /**
      * Create a new rule instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($bookId)
     {
+        $this->bookId = $bookId;
     }
 
     /**
@@ -25,14 +27,12 @@ class SufficientBookQuantity implements Rule
      */
     public function passes($attribute, $value)
     {
-        foreach ($value as $item) {
 
-            $book = Book::find($item['id']);
+        $book = Book::find($this->bookId);
 
-            if($book->quantity < $item['quantity']) return false;
-       }
+        if(!$book) return false;
 
-        return true;
+        return ($book->quantity) >= $value;
     }
 
     /**
@@ -42,6 +42,6 @@ class SufficientBookQuantity implements Rule
      */
     public function message()
     {
-        return 'The books does not have a sufficient quantity.';
+        return 'The book does not have a sufficient quantity.';
     }
 }

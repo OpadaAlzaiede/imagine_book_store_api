@@ -18,8 +18,7 @@ class CartResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'author' => $this->author,
-            'quantity' => $this->quantity,
-            'cart_quantity' => $this->whenPivotLoaded('cart', $this->pivot->quantity)
+            'quantity' => $this->whenPivotLoaded('cart', $this->pivot->quantity)
         ];
     }
 }

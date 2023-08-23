@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Spatie\QueryBuilder\QueryBuilder;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EloquentUserOrderService implements OrderQueryService, OrderStoreService
@@ -39,23 +40,39 @@ class EloquentUserOrderService implements OrderQueryService, OrderStoreService
         return $order->load(Order::getUserAllowedIncludes());
     }
 
-    public function store($data)
+    public function store()
     {
+        if(!$this->validateCart()) throw new BadRequestException(Config::get('messages.api.orders.invalid_cart'));
+
+        $cart = auth()->user()->cart()->get();
+
+        if($cart->count() <= 0)  {
+
+            throw new BadRequestException(Config::get('messages.api.orders.empty'));
+        }
+
         $order = Order::create();
 
-        foreach ($data['books'] as $book) {
+        foreach ($cart as $book) {
 
-            $bookModel = Book::find($book['id']);
-            $requiredQuantity = $book['quantity'];
+            DB::beginTransaction();
+
+            $bookModel = Book::lockForUpdate()->find($book->id);
+
+            $requiredQuantity = $book->pivot->quantity;
 
             $this->attachBookToOrder($order, $bookModel->id, $requiredQuantity, $bookModel->price);
 
             $order->total_price += $requiredQuantity * $bookModel->price;
 
             $bookModel->updateQuantity($requiredQuantity);
+
+            DB::commit();
         }
 
         $order->save();
+
+        auth()->user()->cart()->detach();
 
         return $order->load(Order::getUserAllowedIncludes());
     }
@@ -66,5 +83,20 @@ class EloquentUserOrderService implements OrderQueryService, OrderStoreService
             'quantity' => $quantity,
             'unit_price' => $unitPrice,
         ]);
+    }
+
+    protected function validateCart() {
+
+        $cart = auth()->user()->cart()->get();
+
+        foreach ($cart as $book) {
+
+            $availableQuantity = $book->quantity;
+            $requestedQuantity = $book->pivot->quantity;
+
+            if($availableQuantity < $requestedQuantity) return false;
+        }
+
+        return true;
     }
 }

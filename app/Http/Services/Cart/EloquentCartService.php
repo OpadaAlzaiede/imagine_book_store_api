@@ -7,7 +7,6 @@ class EloquentCartService implements CartService {
 
     public function get()
     {
-
         return auth()->user()->cart;
     }
 
@@ -15,19 +14,26 @@ class EloquentCartService implements CartService {
     {
         $cart = auth()->user()->cart();
 
-        $cart->attach($bookId, [
-            'quantity' => $quantity
-        ]);
+        $cartBook = $cart->where('book_id', $bookId)->first();
 
-        return $cart->get();
+        if($cartBook) {
+
+            $cartBook->pivot->quantity = $quantity;
+            $cartBook->pivot->save();
+        }
+        else {
+            $cart->attach($bookId, [
+                'quantity' => $quantity
+            ]);
+        }
+
+        return auth()->user()->cart()->get();
     }
 
     public function remove($bookId)
     {
-        $cart = auth()->user()->cart();
+        auth()->user()->cart()->detach($bookId);
 
-        $cart->detach($bookId);
-
-        return $cart->get();
+        return auth()->user()->cart()->get();
     }
 }
