@@ -55,7 +55,7 @@ class User extends Authenticatable
 
     public function cart() {
 
-        return $this->belongsToMany(Book::class, 'cart')->withPivot(['quantity']);
+        return $this->belongsToMany(Book::class, 'carts')->withPivot(['quantity']);
     }
 
     public function attachRole($roleName) {

@@ -125,7 +125,6 @@ class AdminOrderTest extends TestCase
     }
 
 
-
     /* Data Seeding Helpers */
 
     protected function createAdmin()

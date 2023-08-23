@@ -46,7 +46,8 @@ class UserOrderTest extends TestCase
         $this->assertEquals($order->id, $response->json()['data']['id']);
     }
 
-    public function test_user_can_store_order() {
+
+    public function test_user_can_create_order_from_his_valid_cart() {
 
         $user = $this->createUser();
 
@@ -55,19 +56,17 @@ class UserOrderTest extends TestCase
         $firstBook = $this->createBook($bookGenre->id, 10);
         $secondBook = $this->createBook($bookGenre->id, 20);
 
-        $response = $this->actingAs($user)->post(self::ROUTE, [
-            'books' => [
-                ['id' => $firstBook->id, 'quantity' => 5],
-                ['id' => $secondBook->id, 'quantity' => 5],
-            ]
-        ]);
+        $user->cart()->attach($firstBook->id, ['quantity' => 5]);
+        $user->cart()->attach($secondBook->id, ['quantity' => 5]);
+
+        $response = $this->actingAs($user)->post(self::ROUTE);
 
         $response->assertStatus(201);
         $this->assertDatabaseCount('orders', 1);
         $this->assertDatabaseCount('book_order', 2);
     }
 
-    public function test_user_cannot_order_books_without_enough_quantity() {
+    public function test_user_cannot_create_order_from_his_invalid_cart() {
 
         $user = $this->createUser();
 
@@ -76,14 +75,17 @@ class UserOrderTest extends TestCase
         $firstBook = $this->createBook($bookGenre->id, 10);
         $secondBook = $this->createBook($bookGenre->id, 20);
 
-        $response = $this->actingAs($user)->post(self::ROUTE, [
-            'books' => [
-                ['id' => $firstBook->id, 'quantity' => 20],
-                ['id' => $secondBook->id, 'quantity' => 5],
-            ]
-        ]);
+        /* Add books to user's cart. */
+        $user->cart()->attach($firstBook->id, ['quantity' => 5]);
+        $user->cart()->attach($secondBook->id, ['quantity' => 5]);
 
-        $response->assertStatus(422);
+        /*  Reduce Books quantity before ordering the cart.  */
+        $firstBook->update(['quantity' => 4]);
+        $secondBook->update(['quantity' => 4]);
+
+        $response = $this->actingAs($user)->post(self::ROUTE);
+
+        $response->assertStatus(400);
         $this->assertDatabaseCount('orders', 0);
         $this->assertDatabaseCount('book_order', 0);
     }
@@ -97,12 +99,11 @@ class UserOrderTest extends TestCase
         $firstBook = $this->createBook($bookGenre->id, 10);
         $secondBook = $this->createBook($bookGenre->id, 20);
 
-        $response = $this->actingAs($user)->post(self::ROUTE, [
-            'books' => [
-                ['id' => $firstBook->id, 'quantity' => 5],
-                ['id' => $secondBook->id, 'quantity' => 5],
-            ]
-        ]);
+        /* Add books to user's cart. */
+        $user->cart()->attach($firstBook->id, ['quantity' => 5]);
+        $user->cart()->attach($secondBook->id, ['quantity' => 5]);
+
+        $response = $this->actingAs($user)->post(self::ROUTE);
 
         $response->assertStatus(201);
         $this->assertDatabaseCount('orders', 1);
