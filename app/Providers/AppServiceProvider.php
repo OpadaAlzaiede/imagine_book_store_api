@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\V1\Admin\AdminBookController;
 use App\Http\Controllers\Api\V1\Admin\AdminOrderController;
 use App\Http\Controllers\Api\V1\BookController;
 use App\Http\Controllers\Api\V1\OrderController;
+use App\Http\Services\Auth\AuthService;
+use App\Http\Services\Auth\EloquentAuthService;
 use App\Http\Services\BookGenres\BookGenreService;
 use App\Http\Services\BookGenres\EloquentBookGenreService;
 use App\Http\Services\Books\BookModificationService;
@@ -31,6 +33,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+
+        /* Bind Auth Service */
+        $this->app->bind(AuthService::class, EloquentAuthService::class);
 
         /* Bind User Service */
         $this->app->bind(UserService::class, EloquentUserService::class);

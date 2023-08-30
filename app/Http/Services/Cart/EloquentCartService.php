@@ -3,16 +3,25 @@
 namespace App\Http\Services\Cart;
 
 
+use App\Http\Services\Auth\AuthService;
+
 class EloquentCartService implements CartService {
+
+    protected $authenticationService;
+
+    public function __construct(AuthService $authenticationService)
+    {
+        $this->authenticationService = $authenticationService;
+    }
 
     public function get()
     {
-        return auth()->user()->cart;
+        return $this->authenticationService->getAuthUser()->cart;
     }
 
     public function add($bookId, $quantity)
     {
-        $cart = auth()->user()->cart();
+        $cart = $this->authenticationService->getAuthUser()->cart();
 
         $cartBook = $cart->where('book_id', $bookId)->first();
 
@@ -27,13 +36,13 @@ class EloquentCartService implements CartService {
             ]);
         }
 
-        return auth()->user()->cart()->get();
+        return $this->authenticationService->getAuthUser()->cart()->get();
     }
 
     public function remove($bookId)
     {
-        auth()->user()->cart()->detach($bookId);
+        $this->authenticationService->getAuthUser()->detach($bookId);
 
-        return auth()->user()->cart()->get();
+        return $this->authenticationService->getAuthUser()->get();
     }
 }
