@@ -4,7 +4,7 @@
 namespace App\Http\Services\Orders;
 
 
-use App\Http\Services\Auth\AuthService;
+use App\Http\Services\UserResolver\UserResolver;
 use App\Models\Book;
 use App\Models\Order;
 use Illuminate\Support\Facades\Config;
@@ -15,16 +15,16 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EloquentUserOrderService implements OrderQueryService, OrderStoreService
 {
-    protected $authenticationService;
+    protected $userResolver;
 
-    public function __construct(AuthService $authenticationService)
+    public function __construct(UserResolver $userResolver)
     {
-        $this->authenticationService = $authenticationService;
+        $this->userResolver = $userResolver;
     }
 
     public function index($perPage, $page) {
 
-        return QueryBuilder::for($this->authenticationService->getAuthUser()->orders())
+        return QueryBuilder::for($this->userResolver->get()->orders())
             ->allowedIncludes(Order::getUserAllowedIncludes())
             ->allowedFilters(Order::getUserAllowedFilters())
             ->defaultSort('-id')
@@ -33,7 +33,7 @@ class EloquentUserOrderService implements OrderQueryService, OrderStoreService
 
     public function show($id) {
 
-        $order = $this->authenticationService->getAuthUser()->orders()->find($id);
+        $order = $this->userResolver->get()->orders()->find($id);
 
         if(!$order) {
 
@@ -47,7 +47,7 @@ class EloquentUserOrderService implements OrderQueryService, OrderStoreService
     {
         if(!$this->validateCart()) throw new BadRequestException(Config::get('messages.api.orders.invalid_cart'));
 
-        $cart = $this->authenticationService->getAuthUser()->cart()->get();
+        $cart = $this->userResolver->get()->cart()->get();
 
         if($cart->count() <= 0)  {
 
@@ -75,7 +75,7 @@ class EloquentUserOrderService implements OrderQueryService, OrderStoreService
 
         $order->save();
 
-        $this->authenticationService->getAuthUser()->cart()->detach();
+        $this->userResolver->get()->cart()->detach();
 
         return $order->load(Order::getUserAllowedIncludes());
     }
@@ -90,7 +90,7 @@ class EloquentUserOrderService implements OrderQueryService, OrderStoreService
 
     protected function validateCart() {
 
-        $cart = $this->authenticationService->getAuthUser()->cart()->get();
+        $cart = $this->userResolver->get()->cart()->get();
 
         foreach ($cart as $book) {
 
