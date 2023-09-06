@@ -47,50 +47,60 @@ class EloquentUserOrderService implements OrderQueryService, OrderStoreService
     {
         if(!$this->validateCart()) throw new BadRequestException(Config::get('messages.api.orders.invalid_cart'));
 
-        $cart = $this->userResolver->get()->cart()->get();
+        $cart = $this->userResolver->get()->cart;
 
-        if($cart->count() <= 0)  {
-
-            throw new BadRequestException(Config::get('messages.api.orders.empty'));
-        }
-
-        $order = Order::create();
-
-        foreach ($cart as $book) {
+        try {
 
             DB::beginTransaction();
 
-            $bookModel = Book::lockForUpdate()->find($book->id);
+            $order = Order::create();
 
-            $requiredQuantity = $book->pivot->quantity;
+            $books = $this->getBooksFromCart($cart);
 
-            $this->attachBookToOrder($order, $bookModel->id, $requiredQuantity, $bookModel->price);
+            $totalPrice = 0;
+            $updatedBooksArray = []; // This array will store books after updating it's quantity.
+            $data = []; // This array will store a list of (order, book, quantity) to insert it in one shot.
 
-            $order->total_price += $requiredQuantity * $bookModel->price;
+            foreach ($cart as $cartBook) {
 
-            $bookModel->updateQuantity($requiredQuantity);
+                $dbBook = $books->filter(function($book) use ($cartBook){
+                    return $book->id == $cartBook['id'];
+                })->first();
+
+                $requiredQuantity = $cartBook->pivot->quantity;
+                $bookPrice = $dbBook->price;
+
+                $totalPrice += $requiredQuantity * $bookPrice;
+
+                array_push($data, ['order_id' => $order->id, 'book_id' => $cartBook['id'], 'quantity' => $requiredQuantity, 'unit_price' => $bookPrice]);
+
+                array_push($updatedBooksArray, ['id' => $dbBook->id, 'title' => $dbBook->title, 'author' => $dbBook->author, 'price' => $dbBook->price, 'quantity' => ($dbBook->quantity - $requiredQuantity), 'book_genre_id' => $dbBook->book_genre_id]);
+            }
+
+            DB::table('book_order')->insert($data); // insert all (order, book, quantity) records in one sql stmt.
+            $order->update(['total_price' => $totalPrice]);
+
+            $this->updateBooksQuantity($updatedBooksArray);
+
+            $this->clearUserCart();
 
             DB::commit();
+
+            return $order->load(Order::getUserAllowedIncludes());
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return false;
         }
-
-        $order->save();
-
-        $this->userResolver->get()->cart()->detach();
-
-        return $order->load(Order::getUserAllowedIncludes());
-    }
-
-    protected function attachBookToOrder($order, $bookId, $quantity, $unitPrice) {
-
-        $order->books()->attach($bookId, [
-            'quantity' => $quantity,
-            'unit_price' => $unitPrice,
-        ]);
     }
 
     protected function validateCart() {
 
-        $cart = $this->userResolver->get()->cart()->get();
+        $cart = $this->userResolver->get()->cart;
+
+        if(!$cart || $cart->count() <= 0) return false;
 
         foreach ($cart as $book) {
 
@@ -101,5 +111,20 @@ class EloquentUserOrderService implements OrderQueryService, OrderStoreService
         }
 
         return true;
+    }
+
+    protected function clearUserCart() {
+
+        $this->userResolver->get()->cart()->detach();
+    }
+
+    protected function updateBooksQuantity($books) {
+
+        Book::upsert($books, 'id');
+    }
+
+    protected function getBooksFromCart($cart) {
+
+        return Book::whereIn('id', $cart->pluck('id')->toArray())->get();
     }
 }
